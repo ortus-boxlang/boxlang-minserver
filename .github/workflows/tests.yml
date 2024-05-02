@@ -1,4 +1,4 @@
-name: BoxLang AWS Lambda Runtime Test Suites
+name: BoxLang WebServer Runtime Test Suites
 
 # We are a reusable Workflow only
 on:

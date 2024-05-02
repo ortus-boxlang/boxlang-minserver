@@ -1,11 +1,11 @@
-name: BoxLang AWS Lambda Runtime Snapshots
+name: BoxLang WebServer Runtime Snapshots
 
 on:
   push:
     branches:
       - development
   workflow_dispatch:
-    inputs: 
+    inputs:
       version:
         required: true
 
