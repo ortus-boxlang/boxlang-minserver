@@ -56,18 +56,12 @@ application {
 }
 
 java {
-	// See: https://docs.gradle.org/current/userguide/toolchains.html#toolchains
-    // This is to provide build consistency across developers and CI/CD
-    toolchain {
-        languageVersion = JavaLanguageVersion.of( project.properties[ "jdkVersion" ] )
-    }
 	withJavadocJar()
 }
 
 compileJava {
 	// Compiler Options
 	options.incremental = true
-	options.release = Integer.parseInt( project.properties[ "jdkVersion" ] )
 	options.encoding = 'UTF-8'
 	options.debug()
 }
