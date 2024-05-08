@@ -39,7 +39,7 @@ jobs:
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
-          forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
+          forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -75,7 +75,7 @@ jobs:
           changelogPath: ./changelog.md
           tag: v${{ env.VERSION }}
 
-      - name: Build it!
+      - name: Build v${{ env.VERSION }}
         run: |
           npm install -g markdownlint-cli
           markdownlint changelog.md --fix
