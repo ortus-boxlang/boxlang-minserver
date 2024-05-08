@@ -102,6 +102,8 @@ public class WebRequestBoxContext extends RequestBoxContext {
 	 */
 	protected byte[]				requestBody		= null;
 
+	protected String				webRoot;
+
 	/**
 	 * --------------------------------------------------------------------------
 	 * Constructors
@@ -113,9 +115,10 @@ public class WebRequestBoxContext extends RequestBoxContext {
 	 *
 	 * @param parent The parent context
 	 */
-	public WebRequestBoxContext( IBoxContext parent, HttpServerExchange exchange, URI template ) {
+	public WebRequestBoxContext( IBoxContext parent, HttpServerExchange exchange, String webRoot, URI template ) {
 		super( parent );
 		this.exchange	= exchange;
+		this.webRoot	= webRoot;
 		URLScope		= new URLScope( exchange );
 		formScope		= new FormScope( exchange );
 		CGIScope		= new CGIScope( exchange );
@@ -128,8 +131,8 @@ public class WebRequestBoxContext extends RequestBoxContext {
 	 *
 	 * @param parent The parent context
 	 */
-	public WebRequestBoxContext( IBoxContext parent, HttpServerExchange exchange ) {
-		this( parent, exchange, null );
+	public WebRequestBoxContext( IBoxContext parent, HttpServerExchange exchange, String webRoot ) {
+		this( parent, exchange, webRoot, null );
 	}
 
 	/**
@@ -220,7 +223,7 @@ public class WebRequestBoxContext extends RequestBoxContext {
 	 * Try to get the requested key from the unscoped scope
 	 * Meaning it needs to search scopes in order according to it's context.
 	 * Unlike scopeFindNearby(), this version only searches trancedent scopes like
-	 * cgi or server which are never encapsulated like variables is inside a CFC.
+	 * cgi or server which are never encapsulated like variables is inside a class.
 	 *
 	 * @param key The key to search for
 	 *
@@ -426,6 +429,12 @@ public class WebRequestBoxContext extends RequestBoxContext {
 		}
 
 		return requestBody;
+	}
+
+	public IStruct getConfig() {
+		var config = super.getConfig();
+		config.getAsStruct( Key.runtime ).getAsStruct( Key.mappings ).put( "/", webRoot );
+		return config;
 	}
 
 }
