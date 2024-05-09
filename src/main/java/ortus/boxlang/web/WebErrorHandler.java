@@ -34,6 +34,7 @@ import ortus.boxlang.runtime.types.exceptions.ExceptionUtil;
 import ortus.boxlang.runtime.types.exceptions.LockException;
 import ortus.boxlang.runtime.types.exceptions.MissingIncludeException;
 import ortus.boxlang.runtime.util.FRTransService;
+import ortus.boxlang.web.context.WebRequestBoxContext;
 
 /**
  * I handle default errors for a web request
