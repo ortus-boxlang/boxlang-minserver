@@ -1,4 +1,4 @@
-name: BoxLang WebServer Runtime Test Suites
+name: BoxLang MiniServer Runtime Test Suites
 
 # We are a reusable Workflow only
 on:

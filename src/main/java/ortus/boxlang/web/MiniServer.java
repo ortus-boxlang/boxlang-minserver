@@ -32,9 +32,22 @@ import ortus.boxlang.web.handlers.BLHandler;
 import ortus.boxlang.web.handlers.WelcomeFileHandler;
 
 /**
- * I represent a Server
+ * The BoxLang MiniServer is a simple web server that serves BoxLang files and static files.
+ *
+ * The following command line arguments are supported:
+ *
+ * --port <port> - The port to listen on. Default is 8080.
+ * --webroot <path> - The path to the webroot. Default is the current working directory.
+ * --debug - Enable debug mode.
+ * --host <host> - The host to listen on. Default is localhost.
+ *
+ * Example:
+ *
+ * java -jar boxlang-miniserver.jar --webroot /path/to/webroot --debug
+ *
+ * This will start the BoxLang MiniServer on port 8080, serving files from /path/to/webroot, and enable debug mode.
  */
-public class Server {
+public class MiniServer {
 
 	private static BoxRuntime runtime;
 

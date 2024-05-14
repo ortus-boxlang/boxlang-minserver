@@ -1,4 +1,4 @@
-# ⚡︎ BoxLang WebServer Runtime
+# ⚡︎ BoxLang MiniServer Runtime
 
 ```
 |:------------------------------------------------------:|
@@ -16,7 +16,7 @@
 
 <p>&nbsp;</p>
 
-## Welcome to the BoxLang WebServer Runtime
+## Welcome to the BoxLang MiniServer Runtime
 
 This BoxLang web server runtime is a minimal server powered by JBoss Undertow and the BoxLang language. It is designed to be a lightweight and fast server. It is perfect for serverless applications, microservices, and APIs.  If you want a more robust server, then you can use the BoxLang CommandBox Server.
 

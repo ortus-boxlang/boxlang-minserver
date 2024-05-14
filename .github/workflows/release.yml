@@ -1,6 +1,6 @@
 # This workflow is used to build releases
 # It can also be called by other workflows to reuse the release flow.
-name: BoxLang WebServer Runtime Release
+name: BoxLang MiniServer Runtime Release
 
 on:
   # If you push to main this will trigger a stable release
@@ -19,7 +19,7 @@ on:
         type: boolean
 
 env:
-  MODULE_ID: boxlang-webserver
+  MODULE_ID: boxlang-miniserver
   SNAPSHOT: ${{ inputs.snapshot || false }}
   JDK: 17
   GRADLE: 8.7
@@ -105,8 +105,6 @@ jobs:
         with:
           name: boxlang-build
           path: |
-            build/distributions/**
-            build/libs/**
             build/reports/tests/**
             changelog.md
 
@@ -115,22 +113,22 @@ jobs:
         with:
           args: --acl public-read
         env:
-          AWS_S3_BUCKET: "ortus-temp"
+          AWS_S3_BUCKET: "downloads.ortussolutions.com"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
           SOURCE_DIR: "build/distributions"
-          DEST_DIR: "boxlang-runtimes/${{ env.MODULE_ID }}/${{ env.VERSION }}"
+          DEST_DIR: "ortussolutions/boxlang-runtimes/${{ env.MODULE_ID }}/${{ env.VERSION }}"
 
-      # - name: Upload API Docs to S3
-      #   uses: jakejarvis/s3-sync-action@master
-      #   with:
-      #     args: --acl public-read
-      #   env:
-      #     AWS_S3_BUCKET: "apidocs.ortussolutions.com"
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-      #     SOURCE_DIR: "build-coldbox/apidocs"
-      #     DEST_DIR: ""
+      - name: Upload API Docs to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: "apidocs.ortussolutions.com"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+          SOURCE_DIR: "build/docs/javadoc"
+          DEST_DIR: "boxlang-runtimes/${{ env.MODULE_ID }}/${{ env.VERSION }}"
 
       # - name: Publish to Maven Central
       #   run: |

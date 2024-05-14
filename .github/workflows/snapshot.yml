@@ -1,4 +1,4 @@
-name: BoxLang WebServer Runtime Snapshots
+name: BoxLang MiniServer Runtime Snapshots
 
 on:
   push:
