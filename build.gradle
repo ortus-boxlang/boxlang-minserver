@@ -194,7 +194,7 @@ task downloadBoxLang( type: Download ) {
 	}
 	// Configure the URLs of the files to download
 	src([
-		"https://ortus-temp.s3.amazonaws.com/jericho/libs/boxlang-${boxlangVersion}-all.jar",
+		"https://downloads.ortussolutions.com/ortussolutions/boxlang/${boxlangVersion}/boxlang-${boxlangVersion}-all.jar",
 		"https://downloads.ortussolutions.com/ortussolutions/boxlang-runtimes/boxlang-web-support/${boxlangVersion}/boxlang-web-support-${boxlangVersion}.jar"
 	])
 	// Specify the destination directories for the downloaded files
