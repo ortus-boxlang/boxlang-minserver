@@ -20,6 +20,7 @@ package ortus.boxlang.web;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -43,19 +44,25 @@ import ortus.boxlang.web.handlers.WelcomeFileHandler;
  *
  * Example:
  *
+ * <pre>
  * java -jar boxlang-miniserver.jar --webroot /path/to/webroot --debug
+ * java -jar boxlang-miniserver.jar --port 80 --webroot /var/www
+ * </pre>
  *
  * This will start the BoxLang MiniServer on port 8080, serving files from /path/to/webroot, and enable debug mode.
  */
 public class MiniServer {
 
-	private static BoxRuntime runtime;
-
 	public static void main( String[] args ) {
-		int		port	= 8080;
-		String	webRoot	= "";
-		boolean	debug	= false;
-		String	host	= "localhost";
+		int		port		= 8080;
+		// String webRoot = "workbench/www";
+		// boolean debug = true;
+		String	webRoot		= "";
+		boolean	debug		= false;
+		String	host		= "localhost";
+		String	configPath	= null;
+		String	serverHome	= null;
+
 		// Grab --port and --webroot from args, if they exist
 		// If --debug is set, enable debug mode
 		for ( int i = 0; i < args.length; i++ ) {
@@ -71,28 +78,67 @@ public class MiniServer {
 			if ( args[ i ].equalsIgnoreCase( "--host" ) ) {
 				host = args[ ++i ];
 			}
+			if ( args[ i ].equalsIgnoreCase( "--configPath" ) ) {
+				configPath = args[ ++i ];
+			}
+			if ( args[ i ].equalsIgnoreCase( "--serverHome" ) ) {
+				serverHome = args[ ++i ];
+			}
 		}
+
+		// Get the env map
+		Map<String, String> envVars = System.getenv();
+		// Check if we have a BOXLANG_HOME env var
+		if ( envVars.containsKey( "BOXLANG_CONFIG" ) ) {
+			configPath = envVars.get( "BOXLANG_CONFIG" );
+		}
+		if ( envVars.containsKey( "BOXLANG_HOME" ) ) {
+			serverHome = envVars.get( "BOXLANG_HOME" );
+		}
+		if ( envVars.containsKey( "BOXLANG_DEBUG" ) ) {
+			debug = Boolean.parseBoolean( envVars.get( "BOXLANG_DEBUG" ) );
+		}
+		if ( envVars.containsKey( "BOXLANG_WEBROOT" ) ) {
+			webRoot = envVars.get( "BOXLANG_WEBROOT" );
+		}
+		if ( envVars.containsKey( "BOXLANG_PORT" ) ) {
+			webRoot = envVars.get( "BOXLANG_PORT" );
+		}
+		if ( envVars.containsKey( "BOXLANG_HOST" ) ) {
+			webRoot = envVars.get( "BOXLANG_HOST" );
+		}
+
+		// Normalize the webroot path
 		Path absWebRoot = Paths.get( webRoot ).normalize();
 		if ( !absWebRoot.isAbsolute() ) {
 			absWebRoot = Paths.get( "" ).resolve( webRoot ).normalize().toAbsolutePath().normalize();
 		}
-		System.out.println( "Starting BoxLang Server..." );
-		System.out.println( "Web Root: " + absWebRoot.toString() );
-		System.out.println( "Host: " + host );
-		System.out.println( "Port: " + port );
-		System.out.println( "Debug: " + debug );
-
 		// Verify webroot exists on disk
 		if ( !absWebRoot.toFile().exists() ) {
-			System.out.println( "Web Root does not exist: " + absWebRoot.toString() );
+			System.out.println( "Web Root does not exist, cannot continue: " + absWebRoot.toString() );
 			System.exit( 1 );
 		}
 
-		runtime = BoxRuntime.getInstance( debug );
+		// Start the server
+		var sTime = System.currentTimeMillis();
+		System.out.println( "+ Starting BoxLang Server..." );
+		System.out.println( "- Web Root: " + absWebRoot.toString() );
+		System.out.println( "- Host: " + host );
+		System.out.println( "- Port: " + port );
+		System.out.println( "- Debug: " + debug );
+		System.out.println( "- Config Path: " + configPath );
+		System.out.println( "- Server Home: " + serverHome );
+		System.out.println( "+ Starting BoxLang Runtime..." );
 
+		// Startup the runtime
+		BoxRuntime			runtime			= BoxRuntime.getInstance( debug, configPath, serverHome );
 		Undertow.Builder	builder			= Undertow.builder();
 		ResourceManager		resourceManager	= new PathResourceManager( absWebRoot );
-		Undertow			BLServer		= builder
+
+		System.out.println( "+ Runtime Started in " + ( System.currentTimeMillis() - sTime ) + "ms" );
+
+		// Build out the server
+		Undertow BLServer = builder
 		    .addHttpListener( port, host )
 		    .setHandler( new WelcomeFileHandler(
 		        Handlers.predicate(
@@ -106,6 +152,19 @@ public class MiniServer {
 		    ) )
 		    .build();
 
+		// Add a shutdown hook to stop the server
+		// Add shutdown hook to gracefully stop the server
+		Runtime.getRuntime().addShutdownHook( new Thread( () -> {
+			System.out.println( "Shutting down BoxLang Server..." );
+			BLServer.stop();
+			runtime.shutdown();
+			System.out.println( "BoxLang Server stopped." );
+		} ) );
+
+		// Startup the server
+		System.out.println( "+ BoxLang MiniServer started in " + ( System.currentTimeMillis() - sTime ) + "ms" );
+		System.out.println( "+ BoxLang MiniServer started at: http://" + host + ":" + port );
+		System.out.println( "Press Ctrl+C to stop the server." );
 		BLServer.start();
 	}
 }
