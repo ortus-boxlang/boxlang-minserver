@@ -38,30 +38,31 @@ import ortus.boxlang.web.handlers.WelcomeFileHandler;
  * The following command line arguments are supported:
  *
  * --port <port> - The port to listen on. Default is 8080.
- * --webroot <path> - The path to the webroot. Default is the current working directory.
- * --debug - Enable debug mode.
- * --host <host> - The host to listen on. Default is localhost.
+ * --webroot <path> - The path to the webroot. Default is {@code BOXLANG_HOME/www}
+ * --debug - Enable debug mode or not. Default is false.
+ * --host <host> - The host to listen on. Default is {@code localhost}.
  *
- * Example:
+ * Examples:
  *
  * <pre>
  * java -jar boxlang-miniserver.jar --webroot /path/to/webroot --debug
  * java -jar boxlang-miniserver.jar --port 80 --webroot /var/www
  * </pre>
  *
- * This will start the BoxLang MiniServer on port 8080, serving files from /path/to/webroot, and enable debug mode.
+ * This will start the BoxLang MiniServer on port 8080, serving files from {@code /path/to/webroot}, and enable debug mode.
  */
 public class MiniServer {
 
 	public static void main( String[] args ) {
-		int		port		= 8080;
-		// String webRoot = "workbench/www";
-		// boolean debug = true;
-		String	webRoot		= "";
-		boolean	debug		= false;
-		String	host		= "localhost";
-		String	configPath	= null;
-		String	serverHome	= null;
+		Map<String, String>	envVars		= System.getenv();
+
+		// Setup default values
+		int					port		= Integer.parseInt( envVars.getOrDefault( "BOXLANG_PORT", "8080" ) );
+		String				webRoot		= envVars.getOrDefault( "BOXLANG_WEBROOT", "" );
+		boolean				debug		= Boolean.parseBoolean( envVars.getOrDefault( "BOXLANG_DEBUG", "false" ) );
+		String				host		= envVars.getOrDefault( "BOXLANG_HOST", "localhost" );
+		String				configPath	= envVars.getOrDefault( "BOXLANG_CONFIG", null );
+		String				serverHome	= envVars.getOrDefault( "BOXLANG_HOME", null );
 
 		// Grab --port and --webroot from args, if they exist
 		// If --debug is set, enable debug mode
@@ -84,28 +85,6 @@ public class MiniServer {
 			if ( args[ i ].equalsIgnoreCase( "--serverHome" ) ) {
 				serverHome = args[ ++i ];
 			}
-		}
-
-		// Get the env map
-		Map<String, String> envVars = System.getenv();
-		// Check if we have a BOXLANG_HOME env var
-		if ( envVars.containsKey( "BOXLANG_CONFIG" ) ) {
-			configPath = envVars.get( "BOXLANG_CONFIG" );
-		}
-		if ( envVars.containsKey( "BOXLANG_HOME" ) ) {
-			serverHome = envVars.get( "BOXLANG_HOME" );
-		}
-		if ( envVars.containsKey( "BOXLANG_DEBUG" ) ) {
-			debug = Boolean.parseBoolean( envVars.get( "BOXLANG_DEBUG" ) );
-		}
-		if ( envVars.containsKey( "BOXLANG_WEBROOT" ) ) {
-			webRoot = envVars.get( "BOXLANG_WEBROOT" );
-		}
-		if ( envVars.containsKey( "BOXLANG_PORT" ) ) {
-			webRoot = envVars.get( "BOXLANG_PORT" );
-		}
-		if ( envVars.containsKey( "BOXLANG_HOST" ) ) {
-			webRoot = envVars.get( "BOXLANG_HOST" );
 		}
 
 		// Normalize the webroot path
