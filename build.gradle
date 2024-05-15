@@ -38,7 +38,7 @@ dependencies {
 	// Until BoxLang is published to Maven Central
 	// Look for it in the local build directory
 	// You must run `./gradle build -x test` in the BoxLang project
-	implementation files( 'src/test/resources/libs/boxlang-websupport-1.0.0.jar' )
+	implementation files( 'src/test/resources/libs/boxlang-web-support-1.0.0.jar' )
     implementation files( 'src/test/resources/libs/boxlang-1.0.0-all.jar' )
 	// https://mvnrepository.com/artifact/io.undertow/undertow-core/2.3.12.Final
 	implementation 'io.undertow:undertow-core:2.3.12.Final'
@@ -104,14 +104,37 @@ shadowJar {
 tasks.distZip.setEnabled( false )
 tasks.distTar.setEnabled( false )
 tasks.shadowDistTar.setEnabled( false )
-// Create a task that renames a distribution file
-task renameDistributionFile( type: Task ) {
+tasks.shadowDistZip.setEnabled( false )
+
+/**
+ * This is necessary to create a single level instead of what shadow does
+ */
+import java.nio.file.Files
+task createDistributionFile( type: Zip ){
+	dependsOn startShadowScripts
+	from( 'build/scriptsShadow' ) {
+		into 'bin'
+	}
+	from( 'build/distributions' ) {
+		include 'boxlang-miniserver-' + version + '-all.jar'
+		into 'lib'
+	}
+	archiveFileName = "boxlang-miniserver-${version}.zip"
 	doLast {
-		file( "build/distributions/boxlang-miniserver-shadow-${version}.zip" )
-			.renameTo( file( "build/distributions/boxlang-miniserver-${version}.zip" ) )
+		Files.copy( file( "build/libs/boxlang-miniserver-${version}-javadoc.jar" ).toPath(), file( "build/distributions/boxlang-miniserver-${version}-javadoc.jar" ).toPath() )
+
+		file( "build/evergreen" ).mkdirs()
+		if( branch == 'development' ){
+			Files.copy( file( "build/distributions/boxlang-miniserver-${version}.zip" ).toPath(), file( "build/evergreen/boxlang-miniserver-snapshot.zip" ).toPath() )
+			Files.copy( file( "build/distributions/boxlang-miniserver-${version}-all.jar" ).toPath(), file( "build/evergreen/boxlang-miniserver-snapshot-all.jar" ).toPath() )
+	   } else {
+			Files.copy( file( "build/distributions/boxlang-miniserver-${version}.zip" ).toPath(), file( "build/evergreen/boxlang-miniserver-latest.zip" ).toPath() )
+	   }
+
+		println "+ Distribution file has been created"
 	}
 }
-build.finalizedBy( renameDistributionFile )
+build.finalizedBy( createDistributionFile )
 
 /**
  * Docs are here:
