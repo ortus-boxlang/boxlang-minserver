@@ -89,6 +89,7 @@ jar {
 	   attributes 'Created-By': "Ortus Solutions, Corp"
     }
 }
+
 shadowJar {
     destinationDirectory = file( "build/distributions" )
 	mergeServiceFiles()
