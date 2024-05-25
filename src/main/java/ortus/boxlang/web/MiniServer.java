@@ -25,6 +25,9 @@ import java.util.Map;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.predicate.Predicates;
+import io.undertow.server.handlers.encoding.ContentEncodingRepository;
+import io.undertow.server.handlers.encoding.EncodingHandler;
+import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.server.handlers.resource.ResourceManager;
@@ -119,16 +122,18 @@ public class MiniServer {
 		// Build out the server
 		Undertow BLServer = builder
 		    .addHttpListener( port, host )
-		    .setHandler( new WelcomeFileHandler(
-		        Handlers.predicate(
-		            // If this predicate evaluates to true, we process via BoxLang, otherwise, we serve a static file
-		            Predicates.parse( "regex( '^(/.+?\\.cfml|/.+?\\.cf[cms]|.+?\\.bx[ms]{0,1})(/.*)?$' )" ),
-		            new BLHandler( absWebRoot.toString() ),
-		            new ResourceHandler( resourceManager )
-		                .setDirectoryListingEnabled( true ) ),
-		        resourceManager,
-		        List.of( "index.bxm", "index.bxs", "index.cfm", "index.cfs", "index.htm", "index.html" )
-		    ) )
+		    .setHandler( new EncodingHandler( new ContentEncodingRepository().addEncodingHandler(
+		        "gzip", new GzipEncodingProvider(), 50, Predicates.parse( "request-larger-than(1500)" ) ) )
+		        .setNext( new WelcomeFileHandler(
+		            Handlers.predicate(
+		                // If this predicate evaluates to true, we process via BoxLang, otherwise, we serve a static file
+		                Predicates.parse( "regex( '^(/.+?\\.cfml|/.+?\\.cf[cms]|.+?\\.bx[ms]{0,1})(/.*)?$' )" ),
+		                new BLHandler( absWebRoot.toString() ),
+		                new ResourceHandler( resourceManager )
+		                    .setDirectoryListingEnabled( true ) ),
+		            resourceManager,
+		            List.of( "index.bxm", "index.bxs", "index.cfm", "index.cfs", "index.htm", "index.html" )
+		        ) ) )
 		    .build();
 
 		// Add a shutdown hook to stop the server
