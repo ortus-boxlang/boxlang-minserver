@@ -67,7 +67,7 @@ public class MiniServer {
 		// Grab --port and --webroot from args, if they exist
 		// If --debug is set, enable debug mode
 		for ( int i = 0; i < args.length; i++ ) {
-			if ( args[ i ].equalsIgnoreCase( "--port" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--port" ) || args[ i ].equalsIgnoreCase( "-p" ) ) {
 				port = Integer.parseInt( args[ ++i ] );
 			}
 			if ( args[ i ].equalsIgnoreCase( "--webroot" ) ) {
