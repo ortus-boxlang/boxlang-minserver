@@ -73,19 +73,19 @@ public class MiniServer {
 			if ( args[ i ].equalsIgnoreCase( "--port" ) || args[ i ].equalsIgnoreCase( "-p" ) ) {
 				port = Integer.parseInt( args[ ++i ] );
 			}
-			if ( args[ i ].equalsIgnoreCase( "--webroot" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--webroot" ) || args[ i ].equalsIgnoreCase( "-w" ) ) {
 				webRoot = args[ ++i ];
 			}
-			if ( args[ i ].equalsIgnoreCase( "--debug" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--debug" ) || args[ i ].equalsIgnoreCase( "-d" ) ) {
 				debug = true;
 			}
-			if ( args[ i ].equalsIgnoreCase( "--host" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--host" ) || args[ i ].equalsIgnoreCase( "-h" ) ) {
 				host = args[ ++i ];
 			}
-			if ( args[ i ].equalsIgnoreCase( "--configPath" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--configPath" ) || args[ i ].equalsIgnoreCase( "-c" ) ) {
 				configPath = args[ ++i ];
 			}
-			if ( args[ i ].equalsIgnoreCase( "--serverHome" ) ) {
+			if ( args[ i ].equalsIgnoreCase( "--serverHome" ) || args[ i ].equalsIgnoreCase( "-s" ) ) {
 				serverHome = args[ ++i ];
 			}
 		}
@@ -124,16 +124,16 @@ public class MiniServer {
 		    .addHttpListener( port, host )
 		    .setHandler( new EncodingHandler( new ContentEncodingRepository().addEncodingHandler(
 		        "gzip", new GzipEncodingProvider(), 50, Predicates.parse( "request-larger-than(1500)" ) ) )
-		        .setNext( new WelcomeFileHandler(
-		            Handlers.predicate(
-		                // If this predicate evaluates to true, we process via BoxLang, otherwise, we serve a static file
-		                Predicates.parse( "regex( '^(/.+?\\.cfml|/.+?\\.cf[cms]|.+?\\.bx[ms]{0,1})(/.*)?$' )" ),
-		                new BLHandler( absWebRoot.toString() ),
-		                new ResourceHandler( resourceManager )
-		                    .setDirectoryListingEnabled( true ) ),
-		            resourceManager,
-		            List.of( "index.bxm", "index.bxs", "index.cfm", "index.cfs", "index.htm", "index.html" )
-		        ) ) )
+		            .setNext( new WelcomeFileHandler(
+		                Handlers.predicate(
+		                    // If this predicate evaluates to true, we process via BoxLang, otherwise, we serve a static file
+		                    Predicates.parse( "regex( '^(/.+?\\.cfml|/.+?\\.cf[cms]|.+?\\.bx[ms]{0,1})(/.*)?$' )" ),
+		                    new BLHandler( absWebRoot.toString() ),
+		                    new ResourceHandler( resourceManager )
+		                        .setDirectoryListingEnabled( true ) ),
+		                resourceManager,
+		                List.of( "index.bxm", "index.bxs", "index.cfm", "index.cfs", "index.htm", "index.html" )
+		            ) ) )
 		    .build();
 
 		// Add a shutdown hook to stop the server
