@@ -147,16 +147,19 @@ public class BoxHTTPUndertowExchange implements IBoxHTTPExchange {
 	public void addResponseCookie( BoxCookie cookie ) {
 		if ( !isResponseStarted() ) {
 			Cookie c = new CookieImpl( cookie.getName(), cookie.getValue() );
-			c.setDomain( cookie.getDomain() );
-			c.setPath( cookie.getPath() );
+			if ( cookie.getDomain() != null )
+				c.setDomain( cookie.getDomain() );
+			if ( cookie.getPath() != null )
+				c.setPath( cookie.getPath() );
 			c.setSecure( cookie.isSecure() );
 			c.setHttpOnly( cookie.isHttpOnly() );
-			c.setMaxAge( cookie.getMaxAge() );
+			if ( cookie.getMaxAge() != null )
+				c.setMaxAge( cookie.getMaxAge() );
 			c.setSameSite( cookie.isSameSite() );
-			c.setExpires( cookie.getExpires() );
-			if ( cookie.getSameSiteMode() != null ) {
+			if ( cookie.getExpires() != null )
+				c.setExpires( cookie.getExpires() );
+			if ( cookie.getSameSiteMode() != null )
 				c.setSameSiteMode( cookie.getSameSiteMode() );
-			}
 			exchange.setResponseCookie( c );
 		}
 	}
@@ -231,14 +234,19 @@ public class BoxHTTPUndertowExchange implements IBoxHTTPExchange {
 		for ( int i = 0; i < cookies.size(); i++ ) {
 			Cookie	cookie	= cookies.get( i );
 			var		c		= new BoxCookie( cookie.getName(), cookie.getValue() );
-			c.setDomain( cookie.getDomain() );
-			c.setPath( cookie.getPath() );
+			if ( cookie.getDomain() != null )
+				c.setDomain( cookie.getDomain() );
+			if ( cookie.getPath() != null )
+				c.setPath( cookie.getPath() );
 			c.setSecure( cookie.isSecure() );
 			c.setHttpOnly( cookie.isHttpOnly() );
-			c.setMaxAge( cookie.getMaxAge() );
+			if ( cookie.getMaxAge() != null )
+				c.setMaxAge( cookie.getMaxAge() );
 			c.setSameSite( cookie.isSameSite() );
-			c.setExpires( cookie.getExpires() );
-			c.setSameSiteMode( cookie.getSameSiteMode() );
+			if ( cookie.getExpires() != null )
+				c.setExpires( cookie.getExpires() );
+			if ( cookie.getSameSiteMode() != null )
+				c.setSameSiteMode( cookie.getSameSiteMode() );
 			boxCookies[ i ] = c;
 		}
 		return boxCookies;
