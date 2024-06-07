@@ -1,0 +1,3 @@
+<bx:script>
+	writeDump( cgi )
+</bx:script>

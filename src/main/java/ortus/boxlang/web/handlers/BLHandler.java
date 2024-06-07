@@ -67,7 +67,7 @@ public class BLHandler implements HttpHandler {
 	 * Process path info real quick
 	 * Path info is sort of a servlet concept. It's just everything left in the URI that didn't match the servlet mapping
 	 * In undertow, we can use predicates to match the path info and store it in the exchange attachment so we can get it in the CGI scope
-	 * 
+	 *
 	 * @param exchange The HttpServerExchange
 	 */
 	private void processPathInfo( HttpServerExchange exchange ) {
@@ -92,7 +92,7 @@ public class BLHandler implements HttpHandler {
 
 	/**
 	 * Finalize the response
-	 * 
+	 *
 	 * @param httpExchange The BoxHTTPUndertowExchange
 	 */
 	public void finalizeResponse( BoxHTTPUndertowExchange httpExchange ) {
