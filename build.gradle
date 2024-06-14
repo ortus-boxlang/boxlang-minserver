@@ -174,7 +174,7 @@ processResources {
 	if( branch == 'development' ){
 		filter( ReplaceTokens, tokens: [ 'build.number': "-SNAPSHOT" ] )
 	} else {
-		filter( ReplaceTokens, tokens: [ 'build.number': "+${buildID}" ] )
+		filter( ReplaceTokens, tokens: [ 'build.number': "+" + buildID ] )
 	}
 }
 
@@ -241,17 +241,24 @@ task downloadBoxLang( type: Download ) {
  * Project Wide Helper function
  * This is not a task, but a reusable UDF
  */
-project.ext.bumpVersion = { boolean major = false, boolean minor = false, boolean patch = false ->
+project.ext.bumpVersion = {
+	boolean major = false,
+	boolean minor = false,
+	boolean patch = false,
+	boolean beta = false,
+	property = "version" ->
 
-	def propertiesFile = file( '../gradle.properties' );
+	def propertiesFile = file( './gradle.properties' );
 	def properties = new Properties();
 
 	properties.load( propertiesFile.newDataInputStream() )
 	def versionTarget = major ? 0 : minor ? 1 : 2
 
-	def currentVersion = properties.getProperty( 'version' )
+	def currentVersion = properties.getProperty( property )
 	def versionParts = currentVersion.split( '\\.' )
-	def newPathVersion = versionParts[ versionTarget ].toInteger() + 1
+	if( !beta ){
+		def newPathVersion = versionParts[ versionTarget ].toInteger() + 1
+	}
 	def newVersion = '';
 
 	if( patch ){
@@ -260,19 +267,27 @@ project.ext.bumpVersion = { boolean major = false, boolean minor = false, boolea
 		newVersion = "${versionParts[ 0 ]}.${newPathVersion}.${versionParts[ 2 ]}"
 	} else if( major ){
 		newVersion = "${newPathVersion}.${versionParts[ 1 ]}.${versionParts[ 2 ]}"
+	} else if( beta ){
+		// Get's the -betaX version.
+		def betaString = currentVersion.split( '-' )[ 1 ]
+		// Now we get the beta number
+		def betaNumber = betaString.split( 'beta' )[ 1 ].toInteger() + 1
+		newVersion = currentVersion.split( '-' )[ 0 ] + "-beta${betaNumber}"
 	}
 
-	properties.setProperty( 'version', newVersion )
+	properties.setProperty( property, newVersion )
 	properties.store( propertiesFile.newWriter(), null )
 
 	println "Bumped version from ${currentVersion} to ${newVersion}"
 }
+
 /**
  * Bump the major version number
  */
 task bumpMajorVersion {
 	doLast{
-		bumpVersion( true )
+		bumpVersion( true, false, false, false, "version" )
+		bumpVersion( true, false, false, false, "boxlangVersion" )
 	}
 }
 
@@ -281,7 +296,8 @@ task bumpMajorVersion {
  */
 task bumpMinorVersion {
 	doLast{
-		bumpVersion( false, true )
+		bumpVersion( false, true, false, false, "version" )
+		bumpVersion( false, true, false, false, "boxlangVersion" )
 	}
 }
 
@@ -290,6 +306,17 @@ task bumpMinorVersion {
  */
 task bumpPatchVersion {
 	doLast{
-		bumpVersion( false, false, true )
+		bumpVersion( false, false, true, false, "version" )
+		bumpVersion( false, false, true, false, "boxlangVersion" )
+	}
+}
+
+/**
+ * Bump the beta version number
+ */
+task bumpBetaVersion {
+	doLast{
+		bumpVersion( false, false, false, true, "version" )
+		bumpVersion( false, false, false, true, "boxlangVersion" )
 	}
 }

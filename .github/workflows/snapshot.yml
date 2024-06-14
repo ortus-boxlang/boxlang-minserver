@@ -1,4 +1,4 @@
-name: BoxLang MiniServer Runtime Snapshots
+name: Snapshots
 
 on:
   push:
@@ -13,6 +13,9 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  MODULE_ID: ${{ github.event.repository.name }}
 
 jobs:
   #############################################
