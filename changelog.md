@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0-beta2] - 2024-06-21
-
 ## [1.0.0-beta1] - 2024-06-14
 
 - Upgraded to Undertow latest due to security fix
