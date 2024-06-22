@@ -48,7 +48,7 @@ dependencies {
 	implementation files( 'src/test/resources/libs/boxlang-' + boxlangVersion + '-all.jar' )
 
 	// https://mvnrepository.com/artifact/io.undertow/undertow-core/2.3.12.Final
-	implementation 'io.undertow:undertow-core:2.3.13.Final'
+	implementation 'io.undertow:undertow-core:2.3.14.Final'
 
     // Testing Dependencies
     testImplementation "org.junit.jupiter:junit-jupiter:5.+"
